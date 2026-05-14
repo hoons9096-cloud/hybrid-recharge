@@ -1,0 +1,337 @@
+{
+  "generated_at_utc": "2026-03-23T12:40:54.986590+00:00",
+  "platform": {
+    "python": "3.10.12",
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "system": "Linux-6.8.0-94-generic-x86_64-with-glibc2.35"
+  },
+  "summary": {
+    "total_cases": 4,
+    "ok_cases": 4,
+    "error_cases": 0,
+    "baseline": {
+      "pass": 4,
+      "fail": 0,
+      "no_baseline": 0
+    }
+  },
+  "results": [
+    {
+      "case": {
+        "label": "demo",
+        "input_path": "DEMO",
+        "k_val": -0.05,
+        "z_val": 3.0,
+        "lag_val": 0.0,
+        "sn_idx": 3.0,
+        "q_val": 0.005,
+        "r_val": 0.1,
+        "rc_val": 0.001,
+        "ignore_pump": 1.0,
+        "sens_val": 5.0,
+        "do_optimize": 0.0
+      },
+      "status": "ok",
+      "summary": {
+        "rmse": 0.0988584015163789,
+        "cc": 0.9780139016801115,
+        "nse": 0.9562574737069556,
+        "kge": 0.9562452273892789,
+        "pbias": 0.0006451007470981954,
+        "recharge_ratio": 5.283907500075689,
+        "Sy_eff": 0.07017364131314609,
+        "stress": 0.8518518518518519,
+        "pump_contam_idx": 0.0,
+        "pump_event_count": 0,
+        "pump_max_run": 0,
+        "eval_n": 365
+      },
+      "baseline_check": {
+        "status": "pass",
+        "checks": [
+          {
+            "metric": "rmse",
+            "rule": "<= 0.2",
+            "value": 0.0988584015163789,
+            "passed": true
+          },
+          {
+            "metric": "cc",
+            "rule": ">= 0.95",
+            "value": 0.9780139016801115,
+            "passed": true
+          },
+          {
+            "metric": "eval_n",
+            "rule": ">= 300",
+            "value": 365,
+            "passed": true
+          },
+          {
+            "metric": "stress",
+            "rule": ">= 0.8",
+            "value": 0.8518518518518519,
+            "passed": true
+          },
+          {
+            "metric": "pump_contam_idx",
+            "rule": "<= 0.1",
+            "value": 0.0,
+            "passed": true
+          },
+          {
+            "metric": "recharge_ratio",
+            "rule": ">= 5.0",
+            "value": 5.283907500075689,
+            "passed": true
+          },
+          {
+            "metric": "recharge_ratio",
+            "rule": "<= 15.0",
+            "value": 5.283907500075689,
+            "passed": true
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "case": {
+        "label": "sh11",
+        "input_path": "SH11.txt",
+        "k_val": -0.05,
+        "z_val": 3.0,
+        "lag_val": 0.0,
+        "sn_idx": 3.0,
+        "q_val": 0.005,
+        "r_val": 0.1,
+        "rc_val": 0.001,
+        "ignore_pump": 1.0,
+        "sens_val": 5.0,
+        "do_optimize": 0.0
+      },
+      "status": "ok",
+      "summary": {
+        "rmse": 0.03453390574657023,
+        "cc": 0.9928124443134851,
+        "nse": 0.9854807299372776,
+        "kge": 0.9777077957612281,
+        "pbias": 0.06209465461001263,
+        "recharge_ratio": 26.605599802261633,
+        "Sy_eff": 0.1629625918211056,
+        "stress": 0.8518518518518519,
+        "pump_contam_idx": 0.0,
+        "pump_event_count": 0,
+        "pump_max_run": 0,
+        "eval_n": 343
+      },
+      "baseline_check": {
+        "status": "pass",
+        "checks": [
+          {
+            "metric": "rmse",
+            "rule": "<= 0.1",
+            "value": 0.03453390574657023,
+            "passed": true
+          },
+          {
+            "metric": "cc",
+            "rule": ">= 0.97",
+            "value": 0.9928124443134851,
+            "passed": true
+          },
+          {
+            "metric": "eval_n",
+            "rule": ">= 300",
+            "value": 343,
+            "passed": true
+          },
+          {
+            "metric": "stress",
+            "rule": ">= 0.8",
+            "value": 0.8518518518518519,
+            "passed": true
+          },
+          {
+            "metric": "pump_contam_idx",
+            "rule": "<= 0.1",
+            "value": 0.0,
+            "passed": true
+          },
+          {
+            "metric": "recharge_ratio",
+            "rule": ">= 20.0",
+            "value": 26.605599802261633,
+            "passed": true
+          },
+          {
+            "metric": "recharge_ratio",
+            "rule": "<= 35.0",
+            "value": 26.605599802261633,
+            "passed": true
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "case": {
+        "label": "sh22",
+        "input_path": "SH22.txt",
+        "k_val": -0.05,
+        "z_val": 3.0,
+        "lag_val": 0.0,
+        "sn_idx": 3.0,
+        "q_val": 0.005,
+        "r_val": 0.1,
+        "rc_val": 0.001,
+        "ignore_pump": 1.0,
+        "sens_val": 5.0,
+        "do_optimize": 0.0
+      },
+      "status": "ok",
+      "summary": {
+        "rmse": 0.14233533377912735,
+        "cc": 0.9399468929067565,
+        "nse": 0.8801232635603129,
+        "kge": 0.8674703442120912,
+        "pbias": 0.02122706479994865,
+        "recharge_ratio": 25.452151228986473,
+        "Sy_eff": 0.1612809121266819,
+        "stress": 0.8518518518518519,
+        "pump_contam_idx": 0.26902930402930403,
+        "pump_event_count": 4,
+        "pump_max_run": 4,
+        "eval_n": 309
+      },
+      "baseline_check": {
+        "status": "pass",
+        "checks": [
+          {
+            "metric": "rmse",
+            "rule": "<= 0.2",
+            "value": 0.14233533377912735,
+            "passed": true
+          },
+          {
+            "metric": "cc",
+            "rule": ">= 0.89",
+            "value": 0.9399468929067565,
+            "passed": true
+          },
+          {
+            "metric": "eval_n",
+            "rule": ">= 250",
+            "value": 309,
+            "passed": true
+          },
+          {
+            "metric": "stress",
+            "rule": ">= 0.8",
+            "value": 0.8518518518518519,
+            "passed": true
+          },
+          {
+            "metric": "pump_contam_idx",
+            "rule": "<= 0.35",
+            "value": 0.26902930402930403,
+            "passed": true
+          },
+          {
+            "metric": "recharge_ratio",
+            "rule": ">= 20.0",
+            "value": 25.452151228986473,
+            "passed": true
+          },
+          {
+            "metric": "recharge_ratio",
+            "rule": "<= 35.0",
+            "value": 25.452151228986473,
+            "passed": true
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "case": {
+        "label": "sh28",
+        "input_path": "SH28.txt",
+        "k_val": -0.05,
+        "z_val": 3.0,
+        "lag_val": 0.0,
+        "sn_idx": 3.0,
+        "q_val": 0.005,
+        "r_val": 0.1,
+        "rc_val": 0.001,
+        "ignore_pump": 1.0,
+        "sens_val": 5.0,
+        "do_optimize": 0.0
+      },
+      "status": "ok",
+      "summary": {
+        "rmse": 0.06360471102092555,
+        "cc": 0.9728862248254996,
+        "nse": 0.9459869721354727,
+        "kge": 0.9432736794450746,
+        "pbias": 0.03060891526147496,
+        "recharge_ratio": 24.611603435458484,
+        "Sy_eff": 0.1614436502743912,
+        "stress": 0.8518518518518519,
+        "pump_contam_idx": 0.16971966205837175,
+        "pump_event_count": 2,
+        "pump_max_run": 4,
+        "eval_n": 302
+      },
+      "baseline_check": {
+        "status": "pass",
+        "checks": [
+          {
+            "metric": "rmse",
+            "rule": "<= 0.1",
+            "value": 0.06360471102092555,
+            "passed": true
+          },
+          {
+            "metric": "cc",
+            "rule": ">= 0.95",
+            "value": 0.9728862248254996,
+            "passed": true
+          },
+          {
+            "metric": "eval_n",
+            "rule": ">= 250",
+            "value": 302,
+            "passed": true
+          },
+          {
+            "metric": "stress",
+            "rule": ">= 0.8",
+            "value": 0.8518518518518519,
+            "passed": true
+          },
+          {
+            "metric": "pump_contam_idx",
+            "rule": "<= 0.25",
+            "value": 0.16971966205837175,
+            "passed": true
+          },
+          {
+            "metric": "recharge_ratio",
+            "rule": ">= 20.0",
+            "value": 24.611603435458484,
+            "passed": true
+          },
+          {
+            "metric": "recharge_ratio",
+            "rule": "<= 35.0",
+            "value": 24.611603435458484,
+            "passed": true
+          }
+        ]
+      },
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+# Pump Pre-processing + Kalman WTF — Python 의존성
+# 설치: pip install -r requirements.txt
+
+numpy>=1.23
+pandas>=1.5
+scipy>=1.9
+matplotlib>=3.6
+
+# 변화점 탐지 (선택 — pelt 방법 가속화)
+# ruptures>=1.1.7
+
+# 선택: 병렬 최적화 가속 (대용량 데이터셋)
+# joblib>=1.2

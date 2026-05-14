@@ -1,0 +1,44 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+pytest-cache-files-*/
+
+# Distribution / packaging
+*.egg-info/
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+env/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local credentials / configs
+.env
+.env.*
+secrets.json
+
+# Local data — do not commit field datasets
+data_raw/
+data_private/
+*.csv.bak
+*.npz.bak
+
+# Logs
+*.log
+
+# Claude / AI agent
+.claude/
+CLAUDE.md
