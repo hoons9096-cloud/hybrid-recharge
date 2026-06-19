@@ -452,9 +452,11 @@ def run_demo(data_dir: str = ".") -> Tuple["SpatialEnKF", EnKFResult]:
     else:
         print("  SH11.txt 없음 — 합성 데이터 사용")
         n_ = 344
-        ho_m = np.clip(np.random.normal(0.7, 0.15, n_), 0.05, 2.0)
-        po_m = np.where(np.random.rand(n_) < 0.2,
-                        np.random.exponential(0.005, n_), 0.0)
+        # 재현성: 전역 np.random 대신 cfg.random_seed 로 고정한 Generator 사용
+        _demo_rng = np.random.default_rng(cfg.random_seed)
+        ho_m = np.clip(_demo_rng.normal(0.7, 0.15, n_), 0.05, 2.0)
+        po_m = np.where(_demo_rng.random(n_) < 0.2,
+                        _demo_rng.exponential(0.005, n_), 0.0)
         enkf.add_well("SH11", ho_m, po_m, sn=12)
 
     po_raw = enkf._wells["SH11"]["po"]

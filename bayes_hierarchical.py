@@ -20,6 +20,7 @@ Healy, R.W. (2010). Estimating Groundwater Recharge.
 """
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
@@ -83,6 +84,8 @@ class HierarchicalResult:
     autocorr_time: Optional[np.ndarray] = None
     converged: bool = False
     n_burn_in: int = 0
+    seed: int = 0                       # 재현에 사용된 seed (cross-process 동일성 보장)
+    r_hat_max: Optional[float] = None   # Gelman-Rubin split-R̂ 최댓값 (<1.05 권장)
 
 
 # ---------------------------------------------------------------------------
@@ -91,6 +94,34 @@ class HierarchicalResult:
 def _hsg_prior_sy(hsg: str, aquifer: str) -> float:
     sn = HSG_AQUIFER_TO_SN[(hsg, aquifer)]
     return float(SOIL_DB[sn].sy_lit)
+
+
+def _gelman_rubin(chain_3d: np.ndarray) -> float:
+    """Split-R̂ (Gelman-Rubin) 의 전 파라미터 최댓값.
+
+    chain_3d : (n_steps, n_walkers, n_dim) — burn-in 제거 후 체인.
+    각 walker 를 전·후반으로 쪼개 2배 chain 으로 보고 split-R̂ 계산.
+    R̂ → 1 이면 수렴.  표본/체인이 부족하면 nan 반환.
+    """
+    n_steps, n_walkers, n_dim = chain_3d.shape
+    half = n_steps // 2
+    if half < 2:
+        return float("nan")
+    # 전·후반 분할 → 2·n_walkers 개의 길이 half 체인
+    split = np.concatenate(
+        [chain_3d[:half], chain_3d[half:2 * half]], axis=1
+    )  # (half, 2·n_walkers, n_dim)
+    m = split.shape[1]          # 체인 수
+    n = half                    # 체인 길이
+    chain_mean = split.mean(axis=0)               # (m, n_dim)
+    grand_mean = chain_mean.mean(axis=0)          # (n_dim,)
+    B = n * chain_mean.var(axis=0, ddof=1)        # between-chain
+    W = split.var(axis=0, ddof=1).mean(axis=0)    # within-chain
+    var_hat = (n - 1) / n * W + B / n
+    with np.errstate(divide="ignore", invalid="ignore"):
+        r_hat = np.sqrt(var_hat / W)
+    r_hat = r_hat[np.isfinite(r_hat)]
+    return float(np.max(r_hat)) if r_hat.size else float("nan")
 
 
 # ---------------------------------------------------------------------------
@@ -214,15 +245,26 @@ def fit_hierarchical(
         init[:, 5 + j] = o.sy_eff_obs + rng.normal(0, 0.02, n_walkers)
     init = np.clip(init, 0.02, 0.40)
 
-    sampler = emcee.EnsembleSampler(n_walkers, n_dim, log_post)
-    sampler.run_mcmc(init, n_steps, progress=verbose)
+    # 재현성(cross-process): emcee 는 EnsembleSampler '생성 시점'의 numpy 전역 RNG
+    # 상태를 캡처해 내부 _random 으로 복사한다(ensemble.py).  따라서 walker 초기값
+    # (default_rng(seed)) 만으로는 부족하고, 샘플러 '생성 전'에 전역 seed 를 고정해야
+    # 같은 입력이 실행마다 같은 결과를 준다.  호출자 전역 상태는 직후 복원한다.
+    _global_state = np.random.get_state()
+    np.random.seed(seed)
+    try:
+        sampler = emcee.EnsembleSampler(n_walkers, n_dim, log_post)
+        sampler.run_mcmc(init, n_steps, progress=verbose)
+    finally:
+        np.random.set_state(_global_state)
 
     chain = sampler.get_chain(discard=burn_in, flat=True)   # (n_samples, n_dim)
+    chain_3d = sampler.get_chain(discard=burn_in)           # (steps, walkers, dim)
     accept = float(np.mean(sampler.acceptance_fraction))
     try:
         tau = sampler.get_autocorr_time(tol=0)
     except Exception:
         tau = None
+    r_hat_max = _gelman_rubin(chain_3d)
 
     # 샘플 분리
     s_mu_w = chain[:, 0]
@@ -262,13 +304,23 @@ def fit_hierarchical(
     else:
         rech_m = rech_lo = rech_hi = float("nan")
 
-    # 수렴 진단
+    # 수렴 진단: acceptance rate + autocorr + Gelman-Rubin R̂
     converged = (accept > 0.15 and accept < 0.6)
     if tau is not None and len(tau):
         # autocorr time × 50 < n_samples → 수렴 가능성 높음
         eff_steps = (n_steps - burn_in)
         if np.any(tau * 50 > eff_steps):
             converged = False
+    if np.isfinite(r_hat_max) and r_hat_max > 1.05:
+        converged = False
+
+    if not converged:
+        warnings.warn(
+            f"Hierarchical MCMC 미수렴 가능 (accept={accept:.2f}, "
+            f"R̂_max={r_hat_max:.3f}); n_steps 증가 권장. "
+            f"결과는 seed={seed} 로 재현 가능하나 posterior 신뢰도는 낮을 수 있음.",
+            RuntimeWarning, stacklevel=2,
+        )
 
     return HierarchicalResult(
         well_names=[o.name for o in observations],
@@ -292,6 +344,8 @@ def fit_hierarchical(
         autocorr_time=tau,
         converged=converged,
         n_burn_in=burn_in,
+        seed=seed,
+        r_hat_max=(r_hat_max if np.isfinite(r_hat_max) else None),
     )
 
 
