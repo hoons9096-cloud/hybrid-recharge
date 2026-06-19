@@ -167,19 +167,34 @@ def _soil_weighted(
     profile: WatershedSoilProfile,
     well_results: List[WellRechargeResult],
     field_name: str,
+    sy_scale: bool = False,
 ) -> Optional[float]:
     """HSG 면적 비율로 가중 평균.
 
     각 HSG 의 대표값 = 그 HSG 토양에 위치한 관정들의 평균.
-    해당 HSG 에 관정이 없으면 전체 관정 평균을 fallback 으로 사용
-    (논문에서는 회귀/Bayesian prior 로 대체 가능).
+    관측 관정이 없는 HSG 의 대표값 추정:
+      - sy_scale=True (WTF): 관측 관정의 'Sy 단위당 함양'(R/Sy)을 평균한 뒤
+        대상 HSG 의 문헌 Sy 로 다시 스케일 → grid 방법(wtf_soil_weighted)과 동일.
+        토양 구조를 반영하므로 grand-mean fallback 보다 이론적으로 타당.
+      - sy_scale=False (FAO-56 등 Sy 무관 추정): 전체 관정 평균으로 fallback.
     """
-    # 모든 관정 평균 (fallback)
     all_vals = [getattr(w, field_name) for w in well_results
                 if getattr(w, field_name) is not None]
     if not all_vals:
         return None
     overall_mean = float(np.mean(all_vals))
+
+    # WTF: 관측 관정의 Sy 정규화 함양 (R/Sy) 평균 — 미관측 HSG 추정용
+    r_per_sy = None
+    if sy_scale:
+        ratios = [
+            getattr(w, field_name) / HSG_TO_SY[w.soil.hydro_type]
+            for w in well_results
+            if getattr(w, field_name) is not None
+            and HSG_TO_SY.get(w.soil.hydro_type, 0) > 0
+        ]
+        if ratios:
+            r_per_sy = float(np.mean(ratios))
 
     weighted = 0.0
     weight_sum = 0.0
@@ -189,6 +204,8 @@ def _soil_weighted(
                     if getattr(w, field_name) is not None]
         if hsg_vals:
             rep = float(np.mean(hsg_vals))
+        elif r_per_sy is not None and HSG_TO_SY.get(hsg, 0) > 0:
+            rep = r_per_sy * HSG_TO_SY[hsg]      # Sy 비율 스케일링 (grand mean 아님)
         else:
             rep = overall_mean
         weighted += frac * rep
@@ -275,9 +292,9 @@ def estimate_watershed(
     lumped_wtf = float(np.mean(wtf_vals)) if wtf_vals else None
     lumped_fao = float(np.mean(fao_vals)) if fao_vals else None
 
-    # Soil-weighted
-    sw_wtf = _soil_weighted(profile, well_results, "wtf_pct")
-    sw_fao = _soil_weighted(profile, well_results, "fao_pct")
+    # Soil-weighted — WTF 는 Sy 비율 스케일링, FAO-56 은 Sy 무관이라 평균 fallback
+    sw_wtf = _soil_weighted(profile, well_results, "wtf_pct", sy_scale=True)
+    sw_fao = _soil_weighted(profile, well_results, "fao_pct", sy_scale=False)
 
     P_vals = [w.P_annual_mm for w in well_results if np.isfinite(w.P_annual_mm)]
     P_mean = float(np.mean(P_vals)) if P_vals else None

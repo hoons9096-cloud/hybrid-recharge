@@ -265,7 +265,8 @@ def render(tab, ctx):
             st.metric(
                 "Soil-weighted (제안)",
                 f"{r.soil_weighted_wtf_pct:.2f} %" if r.soil_weighted_wtf_pct is not None else "-",
-                help="HSG 면적 비율로 가중 평균. 데이터 부재 HSG 는 전체 평균 fallback.",
+                help="HSG 면적 비율로 가중 평균. 관측 관정이 없는 HSG 는 "
+                     "전체 평균이 아니라 'Sy 단위당 함양 × 해당 HSG 문헌 Sy' 로 추정.",
             )
         with col_d:
             if r.lumped_wtf_pct is not None and r.soil_weighted_wtf_pct is not None:
@@ -299,6 +300,16 @@ def render(tab, ctx):
             lumped_hi = float(np.mean([b["hi95"] for b in bayes_pcts]))
 
             # Soil-weighted Bayesian = HSG 면적 가중
+            # 미관측 HSG 는 grand mean 대신 Sy 비율 스케일링 (watershed_aggregator 와 일치)
+            from shp_soil_mapper import HSG_TO_SY
+            _ratios = [(b["rech_pct"] / HSG_TO_SY[b["hsg"]],
+                        b["lo95"] / HSG_TO_SY[b["hsg"]],
+                        b["hi95"] / HSG_TO_SY[b["hsg"]])
+                       for b in bayes_pcts if HSG_TO_SY.get(b["hsg"], 0) > 0]
+            r_per_sy = (
+                tuple(float(np.mean([x[i] for x in _ratios])) for i in range(3))
+                if _ratios else None
+            )
             sw_bayes = 0.0
             sw_lo = 0.0
             sw_hi = 0.0
@@ -309,6 +320,11 @@ def render(tab, ctx):
                     rep_mean = float(np.mean([b["rech_pct"] for b in hsg_bayes]))
                     rep_lo = float(np.mean([b["lo95"] for b in hsg_bayes]))
                     rep_hi = float(np.mean([b["hi95"] for b in hsg_bayes]))
+                elif r_per_sy is not None and HSG_TO_SY.get(hsg, 0) > 0:
+                    sy_h = HSG_TO_SY[hsg]
+                    rep_mean = r_per_sy[0] * sy_h
+                    rep_lo = r_per_sy[1] * sy_h
+                    rep_hi = r_per_sy[2] * sy_h
                 else:
                     rep_mean = lumped_bayes
                     rep_lo = lumped_lo
