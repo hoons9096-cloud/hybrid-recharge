@@ -4,7 +4,7 @@ Companion code for
 
 > **Choi, J. (2026).** *Bias-Aware Water Table Fluctuation: From Point
 > Estimator to Decision Framework for Groundwater Recharge.*
-> Submitted to *Journal of Hydrology*.
+> Submitted to *Hydrology and Earth System Sciences (HESS)*.
 
 This repository implements a bias-aware framework for spatial groundwater
 recharge estimation from water-level records. It couples four
@@ -122,7 +122,7 @@ If you use this framework in your work, please cite:
   author  = {Choi, Junghoon},
   title   = {Bias-Aware Water Table Fluctuation: From Point Estimator
              to Decision Framework for Groundwater Recharge},
-  journal = {Journal of Hydrology},
+  journal = {Hydrology and Earth System Sciences},
   year    = {2026},
   note    = {Submitted}
 }
