@@ -202,8 +202,8 @@ def fit_hierarchical(
     obs_sd: float = 0.02,
     pump_sd: float = 0.005,
     n_walkers: int = 32,
-    n_steps: int = 3000,
-    burn_in: int = 800,
+    n_steps: int = 12000,   # field-scale(영천 7관정)에서 R̂<1.05 + 50×τ<eff 충족 (≈5–6s)
+    burn_in: int = 3000,
     seed: int = 0,
     verbose: bool = False,
 ) -> HierarchicalResult:

@@ -40,8 +40,8 @@ _USDA_TO_HSG = {
 def estimate_recharge(
     domain, observations,
     n_walkers: int = 32,
-    n_steps: int = 1500,
-    burn_in: int = 400,
+    n_steps: int = 12000,   # 수렴 기본값 (R̂<1.05); bayes_hierarchical 참조
+    burn_in: int = 3000,
 ):
     """Hierarchical Bayesian WTF.
 
