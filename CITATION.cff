@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: Hybrid Recharge: Model-Discrepancy-Aware Water Table Fluctuation Framework
+message: Please cite the accompanying manuscript and this software revision.
+type: software
+authors:
+  - family-names: Choi
+    given-names: Junghoon
+    orcid: https://orcid.org/0009-0002-0509-8089
+repository-code: https://github.com/hoons9096-cloud/hybrid-recharge
+license: MIT
+version: submission-ems-2026
+date-released: 2026-07-19
+preferred-citation:
+  type: article
+  title: "Bounding model discrepancy in water-table-fluctuation recharge estimates: a reproducible decision framework"
+  authors:
+    - family-names: Choi
+      given-names: Junghoon
+      orcid: https://orcid.org/0009-0002-0509-8089
+  journal: Environmental Modelling & Software
+  year: 2026
+  notes: Submitted manuscript
